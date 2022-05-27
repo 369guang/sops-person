@@ -1,0 +1,15 @@
+runmode: debug # debug or production
+addr: 8888
+name: sops-personal-server
+jwt:
+  secret: 'sops-personal-server'
+  exprire: '7d'
+logs:
+  level: debug
+database:
+  host: 127.0.0.1
+  port: 5432
+  name: sopspersonal
+  prefix: sops_
+  max_idle: 10
+  max_pool: 10
