@@ -6,6 +6,11 @@ jwt:
   exprire: '7d'
 logs:
   level: debug
+  directory: logs
+  maxsize: 200
+  max_age: 7
+  max_backups: 10
+  encode-level: LowercaseColorLevelEncoder
 database:
   host: 127.0.0.1
   port: 5432
