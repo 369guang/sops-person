@@ -2,10 +2,10 @@ package settings
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"person/apps/user"
 )
 
 func LoadRoutes(app *fiber.App) {
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
+	api := app.Group("/api")
+	user.ApiRouter(api)
 }

@@ -2,12 +2,11 @@ package main
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"person/core/logs"
-
 	"github.com/urfave/cli"
 	"log"
 	"os"
 	"person/core"
+	"person/core/logs"
 	"person/settings"
 	"sort"
 )
@@ -25,6 +24,9 @@ func main() {
 	core.LOGGER = logs.Loggers()
 	core.DATABASE = settings.InitGorm()
 
+	db, _ := core.DATABASE.DB()
+	defer db.Close()
+
 	app.Commands = []cli.Command{
 		{
 			Name:    "app",
@@ -36,7 +38,10 @@ func main() {
 				settings.LoadMiddleware(apps)
 				settings.LoadRoutes(apps)
 				// Start server
-				log.Fatal(apps.Listen(":3000"))
+				if err := apps.Listen(":3000"); err != nil {
+					core.LOGGER.Error(err.Error())
+					log.Fatal(err)
+				}
 				return nil
 			},
 		},
@@ -46,6 +51,22 @@ func main() {
 			Usage:   "migrate database",
 			Action: func(c *cli.Context) error {
 				settings.MigrateTable(core.DATABASE)
+				return nil
+			},
+		},
+		{
+			Name:    "CreateApp",
+			Aliases: []string{"c"},
+			Usage:   "创建APP",
+			Action: func(c *cli.Context) error {
+				return nil
+			},
+		},
+		{
+			Name:    "CreateAppModelApi",
+			Aliases: []string{"c"},
+			Usage:   "基于model创建API请求函数",
+			Action: func(c *cli.Context) error {
 				return nil
 			},
 		},

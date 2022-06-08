@@ -4,17 +4,19 @@ name: sops-personal-server
 jwt:
   secret: 'sops-personal-server'
   exprire: '7d'
-logs:
+log:
   level: debug
   directory: logs
   maxsize: 200
   max_age: 7
   max_backups: 10
   encode-level: LowercaseColorLevelEncoder
-database:
+db:
+  username: postgres
+  password: 123456
   host: 127.0.0.1
   port: 5432
-  name: sopspersonal
+  name: sops_person
   prefix: sops_
   max_idle: 10
   max_pool: 10
