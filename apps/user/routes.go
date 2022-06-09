@@ -6,6 +6,10 @@ import (
 )
 
 func ApiRouter(app fiber.Router) {
-	// 获取用户信息
+	// User
+	app.Get("/user", apis.Query)
 	app.Post("/user", apis.Create)
+	app.Put("/user/:id", apis.Update)
+	app.Patch("/user/:id", apis.Update)
+	app.Delete("/user/:id", apis.Destroy)
 }

@@ -1,8 +1,21 @@
 package serializers
 
-import "person/apps/user/models"
+func Query(u interface{}) error { //查询
 
-func Create(u *models.User) error {
+	return nil
+}
+
+func Create(u interface{}) error { // 创建
+
+	return nil
+}
+
+func Update(id int, u interface{}) error { //更新
+
+	return nil
+}
+
+func Retrieve(id int) error { // 删除
 
 	return nil
 }
