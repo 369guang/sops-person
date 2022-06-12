@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"gorm.io/gorm"
+	"person/core/auth"
 	"person/core/database"
 	"time"
 )
@@ -19,4 +22,28 @@ type User struct {
 
 func (User) TableName() string {
 	return "system_user"
+}
+
+func (u *User) GetStatus() string {
+	data := map[uint8]string{
+		0: "",
+		1: "正常",
+		2: "停用",
+	}
+	return data[u.Status]
+}
+
+func (u *User) Encrypt() (err error) { // 加密处理
+	if u.Password != "" {
+		u.Password, err = auth.Encrypt(u.Password)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (u *User) BeforeCreate(_ *gorm.DB) (err error) {
+	fmt.Println("执行了 BeforeCreate")
+	return u.Encrypt()
 }

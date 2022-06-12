@@ -7,7 +7,8 @@ import (
 
 func ApiRouter(app fiber.Router) {
 	// User
-	app.Get("/user", apis.Query)
+	app.Get("/user", apis.List)
+	app.Get("/user/:id", apis.Retrieve)
 	app.Post("/user", apis.Create)
 	app.Put("/user/:id", apis.Update)
 	app.Patch("/user/:id", apis.Update)

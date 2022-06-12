@@ -16,7 +16,7 @@ var app *cli.App
 func init() {
 	app = cli.NewApp()
 	app.Name = "运维平台"
-	app.Usage = "开源项目"
+	app.Usage = "Heimdallr-海姆达尔"
 	app.Version = "0.0.1"
 }
 func main() {
@@ -56,7 +56,7 @@ func main() {
 		},
 		{
 			Name:    "CreateApp",
-			Aliases: []string{"c"},
+			Aliases: []string{"ca"},
 			Usage:   "创建APP",
 			Action: func(c *cli.Context) error {
 				return nil
@@ -64,7 +64,7 @@ func main() {
 		},
 		{
 			Name:    "CreateAppModelApi",
-			Aliases: []string{"c"},
+			Aliases: []string{"cam"},
 			Usage:   "基于model创建API请求函数",
 			Action: func(c *cli.Context) error {
 				return nil

@@ -1,29 +1,44 @@
 package apis
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"person/apps/user/models"
+	"person/apps/user/serializers"
 	"person/core"
 	"person/core/errno"
 )
 
-func Query(c *fiber.Ctx) error {
-	type User struct {
-		Id       int    `json:"id"`
-		Username string `json:"username"`
-		Email    string `json:"email"`
-		Mobile   string `json:"mobile"`
-	}
+func List(c *fiber.Ctx) error {
 
-	user := new(User)
+	user := new(serializers.User)
 	if err := c.QueryParser(user); err != nil {
 		return core.Response(c, nil, errno.ErrBind)
 	}
 
-	fmt.Println(user)
+	data, total, err := serializers.List(user)
+	if err != nil {
+		return core.Response(c, nil, err)
+	}
 
-	return core.Response(c, nil, nil)
+	return core.Response(c, core.ListRequest{
+		Data:  data,
+		Total: total,
+	}, nil)
+}
+
+func Retrieve(c *fiber.Ctx) error {
+
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return core.Response(c, nil, errno.ErrBind)
+	}
+
+	data, err := serializers.Retrieve(id)
+	if err != nil {
+		return core.Response(c, nil, err)
+	}
+
+	return core.Response(c, data, nil)
 }
 
 func Create(c *fiber.Ctx) error {
@@ -31,7 +46,11 @@ func Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(&user); err != nil {
 		return core.Response(c, nil, errno.ErrBind)
 	}
-	fmt.Println(user)
+
+	if err := serializers.Create(user); err != nil {
+		return core.Response(c, nil, err)
+	}
+
 	return core.Response(c, nil, nil)
 }
 
@@ -41,13 +60,17 @@ func Update(c *fiber.Ctx) error { // default: PUT
 		return core.Response(c, nil, errno.ErrBind)
 	}
 
-	fmt.Println(id)
-
-	if c.Method() == "PATCH" {
-		fmt.Println("PATCH")
+	user := new(models.User)
+	if err := c.BodyParser(&user); err != nil {
+		return core.Response(c, nil, errno.ErrBind)
 	}
 
-	return core.Response(c, nil, nil)
+	data, err := serializers.Update(id, user, c.Method())
+	if err != nil {
+		return core.Response(c, nil, err)
+	}
+
+	return core.Response(c, data, nil)
 }
 
 func Destroy(c *fiber.Ctx) error {
@@ -56,6 +79,9 @@ func Destroy(c *fiber.Ctx) error {
 		return core.Response(c, nil, errno.ErrBind)
 	}
 
-	fmt.Println(id)
+	if err := serializers.Destroy(id); err != nil {
+		return core.Response(c, nil, err)
+	}
+
 	return core.Response(c, nil, nil)
 }

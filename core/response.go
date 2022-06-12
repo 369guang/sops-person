@@ -11,6 +11,11 @@ type response struct {
 	Data interface{} `json:"data"`
 }
 
+type ListRequest struct {
+	Data  interface{} `json:"data"`
+	Total int64       `json:"total"`
+}
+
 func Response(c *fiber.Ctx, data interface{}, err error) error {
 	code, msg := errno.DecodeErr(err)
 	if code != 0 {
