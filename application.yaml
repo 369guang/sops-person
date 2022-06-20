@@ -3,7 +3,7 @@ addr: 8888
 name: sops-personal-server
 jwt:
   secret: 'sops-personal-server'
-  exprire: '7d'
+  expiration_time: '12h'
 log:
   level: debug
   directory: logs

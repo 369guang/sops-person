@@ -5,10 +5,16 @@ import (
 	"gorm.io/gorm"
 	"person/apps/user/models"
 	"person/core"
+	"person/core/auth"
 	"person/core/database"
 	"person/core/errno"
 	"person/core/serializer"
 )
+
+type LoginFields struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
 type User struct {
 	Id       int    `json:"id"`
@@ -59,21 +65,80 @@ func Retrieve(id int) (interface{}, error) { // 详情
 }
 
 func Create(u *models.User) error { // 创建
-	if !errors.Is(core.DATABASE.Where("username = ?", u).First(&models.User{}).Error, gorm.ErrRecordNotFound) {
+	if !errors.Is(core.DATABASE.Where("username = ?", u.Username).First(&models.User{}).Error, gorm.ErrRecordNotFound) {
 		return errno.ErrUserDuplicate
 	}
 	if err := core.DATABASE.Create(&u).Error; err != nil {
+		core.LOGGER.Error("create user error:  " + err.Error())
 		return err
 	}
 	return nil
 }
 
-func Update(id int, u interface{}, method string) (interface{}, error) { //更新
+func Update(id int, u *models.User, method string) error { //更新
+	if errors.Is(core.DATABASE.Where("id = ?", id).First(&models.User{}).Error, gorm.ErrRecordNotFound) {
+		return errno.ErrRecordNotExist
+	}
 
-	return nil, nil
+	updateData := database.ExcludeStructToMap(&u, "username", "last_login", "login_ip")
+	if _, ok := updateData["password"]; ok {
+		if updateData["password"] == "" {
+			delete(updateData, "password")
+		} else {
+			updateData["password"] = u.Password
+		}
+	}
+
+	if err := core.DATABASE.Model(&models.User{}).Where("id = ?", id).Updates(updateData).Error; err != nil {
+		core.LOGGER.Error("update user error:  " + err.Error())
+		return err
+	}
+
+	return nil
 }
 
 func Destroy(id int) error { // 删除
+	if errors.Is(core.DATABASE.Where("id = ?", id).First(&models.User{}).Error, gorm.ErrRecordNotFound) {
+		return errno.ErrRecordNotExist
+	}
 
+	if err := core.DATABASE.Where("id = ?", id).Delete(&models.User{}).Error; err != nil {
+		core.LOGGER.Error("delete user error:  " + err.Error())
+		return err
+	}
 	return nil
+}
+
+func Login(u *LoginFields) (string, error) { // 登录
+	user := new(models.User)
+	fUser := core.DATABASE.Where("username = ?", u.Username).First(&user)
+	if errors.Is(fUser.Error, gorm.ErrRecordNotFound) {
+		return "", errno.ErrUserNotFound
+	}
+
+	if user.Status == 0 || user.Status == 2 {
+		return "", errno.ErrUserDisabled
+	}
+
+	token, err := auth.Sign(auth.Context{
+		ID:       user.ID,
+		Username: user.Username,
+	}, "")
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
+}
+
+func Info(c *auth.Context) (interface{}, error) { // 获取用户信息
+
+	user := new(models.User)
+	fUser := core.DATABASE.Where("id = ?", c.ID).First(&user)
+	if errors.Is(fUser.Error, gorm.ErrRecordNotFound) {
+		return "", errno.ErrUserNotFound
+	}
+	user.Password = ""
+
+	return user, nil
 }

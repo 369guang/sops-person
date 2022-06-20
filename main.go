@@ -34,7 +34,10 @@ func main() {
 			Usage:   "run app",
 			Action: func(c *cli.Context) error {
 				// Fiber instance
-				apps := fiber.New()
+				apps := fiber.New(fiber.Config{
+					//Prefork:       true,
+					StrictRouting: true,
+				})
 				settings.LoadMiddleware(apps)
 				settings.LoadRoutes(apps)
 				// Start server

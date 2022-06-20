@@ -17,10 +17,11 @@ var (
 	ErrMinPage          = &Errno{Code: 1011, Msg: "最小分页不能小于1或最小分页条目不能小于1"}
 
 	// login error
-	ErrEncrypt              = &Errno{Code: 2101, Msg: "加密用户密码时错误."}
-	ErrUserNotFound         = &Errno{Code: 2102, Msg: "该用户不存在."}
-	ErrTokenInvalid         = &Errno{Code: 2103, Msg: "Token错误."}
-	ErrPasswordIncorrect    = &Errno{Code: 2104, Msg: "密码错误."}
-	ErrUserDuplicate        = &Errno{Code: 2105, Msg: "该用户已存在."}
-	ErrUserOrPasswordIsNull = &Errno{Code: 2106, Msg: "用户名或密码为空."}
+	ErrEncrypt              = &Errno{Code: 2001, Msg: "加密用户密码时错误."}
+	ErrUserNotFound         = &Errno{Code: 2002, Msg: "该用户不存在."}
+	ErrTokenInvalid         = &Errno{Code: 2003, Msg: "Token错误."}
+	ErrPasswordIncorrect    = &Errno{Code: 2004, Msg: "密码错误."}
+	ErrUserDuplicate        = &Errno{Code: 2005, Msg: "该用户已存在."}
+	ErrUserOrPasswordIsNull = &Errno{Code: 2006, Msg: "用户名或密码为空."}
+	ErrUserDisabled         = &Errno{Code: 2007, Msg: "用户被禁用."}
 )

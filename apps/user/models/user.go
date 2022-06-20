@@ -45,5 +45,6 @@ func (u *User) Encrypt() (err error) { // 加密处理
 
 func (u *User) BeforeCreate(_ *gorm.DB) (err error) {
 	fmt.Println("执行了 BeforeCreate")
+	u.Status = 1
 	return u.Encrypt()
 }

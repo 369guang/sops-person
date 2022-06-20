@@ -5,6 +5,7 @@ import (
 	"person/apps/user/models"
 	"person/apps/user/serializers"
 	"person/core"
+	"person/core/auth"
 	"person/core/errno"
 )
 
@@ -65,12 +66,11 @@ func Update(c *fiber.Ctx) error { // default: PUT
 		return core.Response(c, nil, errno.ErrBind)
 	}
 
-	data, err := serializers.Update(id, user, c.Method())
-	if err != nil {
+	if err := serializers.Update(id, user, c.Method()); err != nil {
 		return core.Response(c, nil, err)
 	}
 
-	return core.Response(c, data, nil)
+	return core.Response(c, nil, nil)
 }
 
 func Destroy(c *fiber.Ctx) error {
@@ -84,4 +84,13 @@ func Destroy(c *fiber.Ctx) error {
 	}
 
 	return core.Response(c, nil, nil)
+}
+
+func Info(c *fiber.Ctx) error {
+	ctx := auth.ParseRequest(c)
+	data, err := serializers.Info(ctx)
+	if err != nil {
+		return core.Response(c, nil, err)
+	}
+	return core.Response(c, data, nil)
 }
