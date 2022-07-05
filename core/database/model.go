@@ -20,6 +20,9 @@ func CombinationConditions(whereStruct interface{}) map[string]interface{} {
 	whereV := reflect.ValueOf(whereStruct)
 	data := make(map[string]interface{})
 	for i := 0; i < whereT.NumField(); i++ {
+		if whereT.Field(i).Tag.Get("json") == "page" || whereT.Field(i).Tag.Get("json") == "page_size" {
+			continue
+		}
 		params := whereV.Field(i).Interface()
 		if whereV.Field(i).IsZero() {
 			continue

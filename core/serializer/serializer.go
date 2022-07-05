@@ -15,10 +15,12 @@ func Partition(total int64, page, pageSize int) (int, int, error) {
 		pageSize = 20
 	}
 
-	pageTotal := int(math.Ceil(float64(total) / float64(pageSize)))
-	if page <= 0 || pageSize <= 0 {
-		return 0, 0, errno.ErrMinPage
+	if page == 0 {
+		page = 1
 	}
+
+	pageTotal := int(math.Ceil(float64(total) / float64(pageSize)))
+
 	if pageTotal < page {
 		return 0, 0, errno.ErrMaxPage
 	}

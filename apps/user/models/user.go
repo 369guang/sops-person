@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"gorm.io/gorm"
 	"person/core/auth"
 	"person/core/database"
@@ -18,10 +17,20 @@ type User struct {
 	LastLogin time.Time `gorm:"comment('最后登录时间')" json:"last_login"`
 	Status    uint8     `gorm:"comment('状态')" json:"status"`
 	Avatar    string    `gorm:"comment('头像')" json:"avatar"`
+	Totp      uint8     `gorm:"comment('是否开启TOTP')" json:"totp"`
 }
 
 func (User) TableName() string {
 	return "system_user"
+}
+
+func (u *User) GetToTp() string {
+	data := map[uint8]string{
+		0: "",
+		1: "开启",
+		2: "关闭",
+	}
+	return data[u.Totp]
 }
 
 func (u *User) GetStatus() string {
@@ -44,7 +53,8 @@ func (u *User) Encrypt() (err error) { // 加密处理
 }
 
 func (u *User) BeforeCreate(_ *gorm.DB) (err error) {
-	fmt.Println("执行了 BeforeCreate")
+	//fmt.Println("执行了 BeforeCreate")
 	u.Status = 1
+	u.Totp = 2
 	return u.Encrypt()
 }

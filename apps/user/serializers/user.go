@@ -25,7 +25,7 @@ type User struct {
 	PageSize int    `json:"page_size"`
 }
 
-func List(u *User) (interface{}, int64, error) { //查询
+func List(u User) (interface{}, int64, error) { //查询
 
 	users := make([]models.User, 0)
 	db := core.DATABASE
@@ -44,7 +44,8 @@ func List(u *User) (interface{}, int64, error) { //查询
 
 	dataset := make([]interface{}, 0)
 	for _, user := range users {
-		data := serializer.ModelToSerializers(user)
+		user.Password = ""
+		data := serializer.ModelToSerializers(&user)
 		dataset = append(dataset, data)
 	}
 
@@ -58,7 +59,7 @@ func Retrieve(id int) (interface{}, error) { // 详情
 	if err != nil {
 		return nil, err
 	}
-
+	user.Password = ""
 	data := serializer.ModelToSerializers(user)
 
 	return data, nil
@@ -72,6 +73,15 @@ func Create(u *models.User) error { // 创建
 		core.LOGGER.Error("create user error:  " + err.Error())
 		return err
 	}
+
+	// 创建用户角色
+	key, url := auth.CreateKey(u.Username)
+	authTotp := models.AuthToTp{
+		UserID: u.ID,
+		Keys:   key,
+		Urls:   url,
+	}
+	core.DATABASE.Create(&authTotp)
 	return nil
 }
 
@@ -141,4 +151,21 @@ func Info(c *auth.Context) (interface{}, error) { // 获取用户信息
 	user.Password = ""
 
 	return user, nil
+}
+
+func UpdateSettings(c *auth.Context, u *models.User) error { // 更新用户设置
+	updateData := database.ExcludeStructToMap(&u, "username", "last_login", "login_ip")
+	if _, ok := updateData["password"]; ok {
+		if updateData["password"] == "" {
+			delete(updateData, "password")
+		} else {
+			updateData["password"] = u.Password
+		}
+	}
+
+	if err := core.DATABASE.Model(&models.User{}).Where("id = ?", c.ID).Updates(updateData).Error; err != nil {
+		core.LOGGER.Error("update settings error:  " + err.Error())
+		return err
+	}
+	return nil
 }

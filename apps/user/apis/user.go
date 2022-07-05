@@ -16,7 +16,7 @@ func List(c *fiber.Ctx) error {
 		return core.Response(c, nil, errno.ErrBind)
 	}
 
-	data, total, err := serializers.List(user)
+	data, total, err := serializers.List(*user)
 	if err != nil {
 		return core.Response(c, nil, err)
 	}
@@ -93,4 +93,17 @@ func Info(c *fiber.Ctx) error {
 		return core.Response(c, nil, err)
 	}
 	return core.Response(c, data, nil)
+}
+
+func UpdateSettings(c *fiber.Ctx) error {
+	ctx := auth.ParseRequest(c)
+	user := new(models.User)
+	if err := c.BodyParser(&user); err != nil {
+		return core.Response(c, nil, errno.ErrBind)
+	}
+	err := serializers.UpdateSettings(ctx, user)
+	if err != nil {
+		return core.Response(c, nil, err)
+	}
+	return core.Response(c, nil, nil)
 }

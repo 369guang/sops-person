@@ -3,13 +3,13 @@ package settings
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"gorm.io/gorm"
 	"person/core"
 	"person/core/database"
+	"person/core/middleware"
 )
 
 func InitGorm() *gorm.DB {
@@ -22,7 +22,9 @@ func InitGorm() *gorm.DB {
 
 func LoadMiddleware(app *fiber.App) {
 	// middleware
-	app.Use(logger.New())                           // api日志
+	app.Use(middleware.Loggers(middleware.LogConfig{
+		Format: "${status}|${method}|${path}|${queryParams}|${body}|${ip}|${latency}|${error}",
+	})) // api日志
 	app.Use(recover.New())                          // recover
 	app.Use(cors.New())                             // 跨域
 	app.Use(pprof.New())                            // 开启pprof分析

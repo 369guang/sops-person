@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/urfave/cli"
 	"log"
@@ -54,6 +55,21 @@ func main() {
 			Usage:   "migrate database",
 			Action: func(c *cli.Context) error {
 				settings.MigrateTable(core.DATABASE)
+				return nil
+			},
+		},
+		{
+			Name:    "createsuperuser",
+			Aliases: []string{"csu"},
+			Usage:   "create super user",
+			Action: func(c *cli.Context) error {
+				fmt.Println(len(c.Args()))
+				if len(c.Args()) != 2 {
+					fmt.Println("参数错误")
+					return nil
+				}
+
+				settings.CreateSuperUser(core.DATABASE, c.Args()[0], c.Args()[1])
 				return nil
 			},
 		},

@@ -16,6 +16,10 @@ func ApiRouter(app fiber.Router) {
 
 	// user info
 	app.Get("/user/info/", apis.Info)
+	// user auth
+	app.Get("/user/authtotp/", apis.AuthToTp)
+	// settings
+	app.Post("/user/settings/", apis.UpdateSettings)
 
 }
 

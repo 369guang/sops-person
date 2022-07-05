@@ -2,7 +2,6 @@ package serializer
 
 import (
 	"reflect"
-	"strings"
 )
 
 func ModelToSerializers(model interface{}) map[string]interface{} {
@@ -19,11 +18,7 @@ func ModelToSerializers(model interface{}) map[string]interface{} {
 			data["updated"] = baseModel.FieldByName("UpdatedAt").Interface()
 			continue
 		}
-		source := modelT.Elem().Field(i).Tag.Get("serializers")
 		index := modelT.Elem().Field(i).Tag.Get("json")
-		if source != "" && strings.ContainsAny(source, "write") {
-			continue
-		}
 		data[index] = modelV.Elem().Field(i).Interface()
 	}
 	return data

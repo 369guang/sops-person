@@ -13,6 +13,7 @@ func MigrateTable(db *gorm.DB) {
 		models.User{},       // 用户模块
 		models.ActionLogs{}, // 用户日志
 		models.LoginLogs{},  // 登陆日志
+		models.AuthToTp{},   // TOTP 二次验证
 	)
 	if err != nil {
 		core.LOGGER.Error("数据库迁移失败", zap.Any("err", err))
