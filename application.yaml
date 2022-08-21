@@ -12,6 +12,7 @@ log:
   max_backups: 10
   encode-level: LowercaseColorLevelEncoder
 db:
+  device: postgresql # mysql or sqlite3
   username: postgres
   password: 123456
   host: 127.0.0.1
